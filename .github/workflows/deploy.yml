@@ -1,4 +1,4 @@
-name: Deploy Website
+name: Deploy to Server
 
 on:
   push:
@@ -10,11 +10,15 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
-
-    - name: Build Docker Image
-      run: docker build -t mysite .
-
-    - name: Run Container
-      run: docker run -d -p 8085:80 mysite
+    - name: SSH and Deploy
+      uses: appleboy/ssh-action@v1.0.0
+      with:
+        host: 92.4.68.199
+        username: opc
+        key: ${{ secrets.SSH_KEY }}
+        script: |
+          cd ~/mysite
+          git pull
+          sudo docker stop $(sudo docker ps -q)
+          sudo docker build -t mohit-site .
+          sudo docker run -d -p 8085:80 mohit-site
