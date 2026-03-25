@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: SSH and Deploy
+    - name: Deploy via SSH
       uses: appleboy/ssh-action@v1.0.0
       with:
         host: 92.4.68.199
@@ -19,6 +19,7 @@ jobs:
         script: |
           cd ~/mysite
           git pull
-          sudo docker stop $(sudo docker ps -q)
+          sudo docker stop $(sudo docker ps -q) || true
+          sudo docker rm $(sudo docker ps -aq) || true
           sudo docker build -t mohit-site .
           sudo docker run -d -p 8085:80 mohit-site
